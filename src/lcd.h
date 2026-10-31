@@ -95,6 +95,9 @@ void show_smiley(u8 state);
 
 void show_battery_symbol(bool state);
 void show_big_number_x10(s16 number); // x0.1, (-995..19995), point auto: -99 .. -9.9 .. 199.9 .. 1999
+#if USE_M5STACK_EMU
+void show_big_number(s16 number); // integer, no point (-99..1999)
+#endif
 void show_ble_symbol(bool state);
 
 #if	USE_DISPLAY_CLOCK

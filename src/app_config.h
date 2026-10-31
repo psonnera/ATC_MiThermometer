@@ -469,6 +469,9 @@ extern "C" {
 #define PULL_WAKEUP_SRC_PC2	PM_PIN_PULLDOWN_100K
 
 #elif DEVICE_TYPE == DEVICE_LYWSD03MMC
+#ifndef USE_M5STACK_EMU
+#define USE_M5STACK_EMU		1 // xDrip4iOS "M5Stack" BLE emulation: glucose on the display
+#endif
 /* Original Flash markup:
   0x00000 Old Firmware bin
   0x20000 OTA New bin storage Area
@@ -2623,6 +2626,9 @@ GPIO_D7 - SDA
 #define PULL_WAKEUP_SRC_PB7 RDS1_PULLUP
 
 #elif DEVICE_TYPE == DEVICE_MJWSD06MMC
+#ifndef USE_M5STACK_EMU
+#define USE_M5STACK_EMU		1 // xDrip4iOS "M5Stack" BLE emulation: glucose on the display
+#endif
 /* Original Flash markup:
   0x00000 Old Firmware bin
   0x20000 OTA New bin storage Area
@@ -3546,6 +3552,10 @@ GPIO_PD7 - LED to +Vbat
 #endif
 
 #define USE_DISPLAY_CLOCK 	1 // = 1 display clock, = 0 smile blinking
+
+#ifndef USE_M5STACK_EMU
+#define USE_M5STACK_EMU		0 // xDrip4iOS "M5Stack" BLE emulation (see m5stack.c)
+#endif
 
 #ifndef USE_SYNC_SCAN
 #if (DEV_SERVICES & SERVICE_SCANTIM)

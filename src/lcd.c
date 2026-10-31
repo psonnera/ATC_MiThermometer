@@ -18,6 +18,9 @@
 #include "lcd.h"
 #include "ble.h"
 #include "battery.h"
+#if USE_M5STACK_EMU
+#include "m5stack.h"
+#endif
 
 //RAM u8 show_stage; // count/stage update lcd code buffer
 //RAM u32 chow_ext_sec; // count show validity time, in sec
@@ -70,6 +73,12 @@ void lcd(void) {
 	bool _ble_con =	wrk.ble_connected != 0 || (ext_key.rest_adv_int_tad & 2) != 0;
 #else
 #define _ble_con wrk.ble_connected
+#endif
+#if USE_M5STACK_EMU
+	if (m5_lcd_show()) { // glucose screen (xDrip4iOS)
+		show_ble_symbol(_ble_con);
+		return;
+	}
 #endif
 	bool show_ext = lcd_flg.chow_ext_ut >= wrk.utc_time_sec;
 	if(cfg.flg.show_time_smile || cfg.flg.show_batt_enabled || show_ext)

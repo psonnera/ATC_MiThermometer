@@ -51,6 +51,7 @@ $(OUT_PATH)/src/mi_beacon.o \
 $(OUT_PATH)/src/bthome_beacon.o \
 $(OUT_PATH)/src/scanning.o \
 $(OUT_PATH)/src/xbr818.o \
+$(OUT_PATH)/src/m5stack.o \
 $(OUT_PATH)/src/main.o
 
 

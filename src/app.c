@@ -39,6 +39,9 @@
 #if USE_SYNC_SCAN
 #include "scanning.h"
 #endif
+#if USE_M5STACK_EMU
+#include "m5stack.h"
+#endif
 #if defined(USE_SENSOR_ENS160) && USE_SENSOR_ENS160
 #include "ens160.h"
 #endif
@@ -1011,6 +1014,9 @@ void main_loop(void) {
 	while (clock_time() -  wrk.utc_time_sec_tick > wrk.utc_time_tick_step) {
 		wrk.utc_time_sec_tick += wrk.utc_time_tick_step;
 		wrk.utc_time_sec++; // + 1 sec
+#if USE_M5STACK_EMU
+		m5_task();
+#endif
 #if (DEV_SERVICES & SERVICE_HARD_CLOCK)
 		if(++rtc.seconds >= 60) {
 			rtc.seconds = 0;

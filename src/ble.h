@@ -167,6 +167,15 @@ typedef enum
 	RxTx_CMD_OUT_DP_H,						//UUID: 1F1F,  VALUE: RxTxData
 	RxTx_CMD_OUT_DESC_H,					//UUID: 2902, 	VALUE: RxTxValueInCCC
 
+#if USE_M5STACK_EMU
+	//// M5Stack emulation (xDrip4iOS) ////
+	/**********************************************************************************************/
+	M5_PS_H, 								//UUID: 2800, 	VALUE: AF6E5F78-706A-43FB-B1F4-C27D7D5C762F
+	M5_CD_H,								//UUID: 2803, 	VALUE:  			Prop: write_without_rsp | notify
+	M5_DP_H,								//UUID: 6D810E9F-0983-4030-BDA7-C7C9A6A19C1C, VALUE: my_M5_Data
+	M5_CCB_H,								//UUID: 2902, 	VALUE: m5ValueInCCC
+#endif
+
 	// Mi Advertising char
 	/**********************************************************************************************/
 	Mi_PS_H, 								//UUID: 2800, 	VALUE: 0xFE95 service uuid

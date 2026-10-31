@@ -505,6 +505,32 @@ __attribute__((optimize("-Os"))) void show_small_number(s16 number, bool percent
 	}
 }
 
+#if USE_M5STACK_EMU
+/* integer without decimal point: -99..1999 */
+__attribute__((optimize("-Os"))) void show_big_number(s16 number){
+	display_buff[4] = 0;
+	display_buff[5] = 0;
+	if (number > 1999) {
+   		display_buff[3] = 0;
+   		display_buff[4] = LCD_SYM_i; // "i"
+   		display_buff[5] = LCD_SYM_H; // "H"
+	} else if (number < -99) {
+   		display_buff[3] = 0;
+   		display_buff[4] = LCD_SYM_o; // "o"
+   		display_buff[5] = LCD_SYM_L; // "L"
+	} else {
+		if (number < 0){
+			number = -number;
+			display_buff[5] = 2; // "-"
+		}
+		if (number > 999) display_buff[5] |= 0x08; // "1" 1000..1999
+		if (number > 99) display_buff[5] |= display_numbers[number / 100 % 10];
+		if (number > 9) display_buff[4] |= display_numbers[number / 10 % 10];
+	    display_buff[3] = display_numbers[number %10];
+	}
+}
+#endif // USE_M5STACK_EMU
+
 void show_ota_screen(void) {
 	memset(&display_buff, 0, sizeof(display_buff));
 	display_buff[2] = BIT(4); // "ble"

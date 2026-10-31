@@ -28,7 +28,8 @@ typedef enum {
 	EEP_ID_TIM,	// EEP ID time adjust
 	EEP_ID_KEY,	// EEP ID bkey
 	EEP_ID_HWV, // EEP ID Mi HW version ("B1.4","B1.5",...)
-	EEP_ID_MTN	// EEP ID motion sensor
+	EEP_ID_MTN,	// EEP ID motion sensor
+	EEP_ID_M5P	// EEP ID M5Stack emulation: BLE password (xDrip4iOS)
 } EEP_ID_e;
 //--Option---------------------------------------------------------------------
 #define USE_EEP_BANKS	0  // = 1 используется 2 банка, = 0 без банков

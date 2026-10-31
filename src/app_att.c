@@ -2,6 +2,7 @@
 
 #include "stack/ble/ble.h"
 #include "ble.h"
+#include "m5stack.h"
 
 static const u16 clientCharacterCfgUUID = GATT_UUID_CLIENT_CHAR_CFG; // 2902
 
@@ -431,6 +432,17 @@ static const  u16 my_RxTx_ServiceUUID		= COMMAND_UUID16_SERVICE;
 RAM u8 my_RxTx_Data[sizeof(cfg) + 2];
 RAM u16 RxTxValueInCCC;
 
+#if USE_M5STACK_EMU
+/////////////// M5Stack emulation (xDrip4iOS) ///////////////
+// service AF6E5F78-706A-43FB-B1F4-C27D7D5C762F (little-endian)
+static const u8 my_M5ServiceUUID[16] = {0x2F,0x76,0x5C,0x7D,0x7D,0xC2,0xF4,0xB1,0xFB,0x43,0x6A,0x70,0x78,0x5F,0x6E,0xAF};
+// characteristic 6D810E9F-0983-4030-BDA7-C7C9A6A19C1C (little-endian)
+#define M5_CHAR_UUID_LE 0x1C,0x9C,0xA1,0xA6,0xC9,0xC7,0xA7,0xBD,0x30,0x40,0x83,0x09,0x9F,0x0E,0x81,0x6D
+static const u8 my_M5CharUUID[16] = { M5_CHAR_UUID_LE };
+RAM u8 my_M5_Data[M5_PKT_MAX + 12];
+RAM u16 m5ValueInCCC;
+#endif
+
 // MI 0x95FE
 static const u16 mi_primary_service_uuid = 0xfe95;
 #if (!defined(USE_MIHOME) || USE_MIHOME == 0)
@@ -510,6 +522,15 @@ static const u8 my_OtaCharVal[19] = {
 	U16_LO(OTA_CMD_OUT_DP_H), U16_HI(OTA_CMD_OUT_DP_H),
 	TELINK_SPP_DATA_OTA1,
 };
+
+#if USE_M5STACK_EMU
+//// M5Stack emulation attribute values
+static const u8 my_M5CharVal[19] = {
+	CHAR_PROP_WRITE_WITHOUT_RSP | CHAR_PROP_NOTIFY,
+	U16_LO(M5_DP_H), U16_HI(M5_DP_H),
+	M5_CHAR_UUID_LE
+};
+#endif
 
 //// RxTx attribute values
 static const u8 my_RxTxCharVal[5] = {
@@ -609,6 +630,13 @@ RAM attribute_t my_Attributes[] = {
 		{0,ATT_PERMISSIONS_READ, 2,sizeof(my_RxTxCharVal),(u8*)(&my_characterUUID),	(u8*)(my_RxTxCharVal), 0},				//prop
 		{0,ATT_PERMISSIONS_RDWR, 2,sizeof(my_RxTx_Data),(u8*)(&my_RxTxUUID), (u8*)&my_RxTx_Data, &RxTxWrite, 0},
 		{0,ATT_PERMISSIONS_RDWR, 2,sizeof(RxTxValueInCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(&RxTxValueInCCC), 0},	//value
+#if USE_M5STACK_EMU
+	////////////////////////////////////// M5Stack emulation (xDrip4iOS) ///////////////////////////
+	{4,ATT_PERMISSIONS_READ,2,16,(u8*)(&my_primaryServiceUUID),(u8*)(my_M5ServiceUUID), 0},
+		{0,ATT_PERMISSIONS_READ,2,sizeof(my_M5CharVal),(u8*)(&my_characterUUID),(u8*)(my_M5CharVal), 0},				//prop
+		{0,ATT_PERMISSIONS_RDWR,16,sizeof(my_M5_Data),(u8*)(my_M5CharUUID),(u8*)(my_M5_Data), &m5Write, 0},			//value
+		{0,ATT_PERMISSIONS_RDWR,2,sizeof(m5ValueInCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&m5ValueInCCC), 0},	//value
+#endif
 	//Mi 0x95FE
 	{2,ATT_PERMISSIONS_READ, 2,2,(u8*)(&my_primaryServiceUUID),(u8*)(&mi_primary_service_uuid), 0},
 		{0,ATT_PERMISSIONS_READ, 2,sizeof (my_MiName),(u8*)(&userdesc_UUID),(u8*)(my_MiName), 0},

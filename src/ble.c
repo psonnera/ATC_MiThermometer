@@ -27,6 +27,9 @@
 #if USE_SYNC_SCAN
 #include "scanning.h"
 #endif
+#if USE_M5STACK_EMU
+#include "m5stack.h"
+#endif
 
 
 void bls_set_advertise_prepare(void *p); // add ll_adv.h
@@ -81,6 +84,9 @@ void ble_disconnect_callback(u8 e, u8 *p, int n) {
 	wrk.ble_connected = 0;
 	wrk.ota_is_working = OTA_NONE;
 	mi_key_stage = 0;
+#if USE_M5STACK_EMU
+	m5_on_disconnect();
+#endif
 #if (DEV_SERVICES & SERVICE_SCREEN)
 	lcd_flg.all_flg = 0;
 #endif
@@ -448,6 +454,13 @@ extern attribute_t my_Attributes[ATT_END_H];
 void ble_set_name(void) {
 	s16 len = flash_read_cfg(&ble_name[2], EEP_ID_DVN, min(sizeof(ble_name)-3, MAX_DEV_NAME_LEN));
 	if (len < 1 || len > MAX_DEV_NAME_LEN) {
+#if USE_M5STACK_EMU
+		// xDrip4iOS connects to the first device whose name contains "M5Stack"
+		memcpy(&ble_name[2], "M5Stack_", 8);
+		u8 *p = str_bin2hex(&ble_name[10], &mac_public[1], 1);
+		p = str_bin2hex(p, &mac_public[0], 1);
+		len = 12;
+#else
 		//Set the BLE Name to the last three MACs the first ones are always the same
 #if ((DEVICE_TYPE == DEVICE_MHO_C401) || (DEVICE_TYPE == DEVICE_MHO_C401N) || (DEVICE_TYPE == DEVICE_MHO_C122))
 		ble_name[2] = 'M';
@@ -590,6 +603,7 @@ void ble_set_name(void) {
 		p = str_bin2hex(p, &mac_public[1], 1);
 		p = str_bin2hex(p, &mac_public[0], 1);
 		len = 10;
+#endif // USE_M5STACK_EMU
 	}
 	my_Attributes[GenericAccess_DeviceName_DP_H].attrLen = len;
 	ble_name[0] = (u8)(len + 1);

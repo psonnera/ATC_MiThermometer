@@ -246,6 +246,31 @@ __attribute__((optimize("-Os"))) void show_big_number_x10(s16 number){
 
 /* -9 .. 99 */
 _attribute_ram_code_
+#if USE_M5STACK_EMU
+/* integer without decimal point: -99..1999 */
+__attribute__((optimize("-Os"))) void show_big_number(s16 number){
+	display_buff[4] &= BIT(3);
+	display_buff[5] = 0;
+	display_buff[3] = 0;
+	if (number > 1999) {
+   		display_buff[4] |= LCD_SYM1_H; // "H"
+   		display_buff[3] = LCD_SYM1_i; // "i"
+	} else if (number < -99) {
+   		display_buff[4] |= LCD_SYM1_L; // "L"
+   		display_buff[3] = LCD_SYM1_o; // "o"
+	} else {
+		if (number < 0) {
+			number = -number;
+			display_buff[5] = BIT(1); // "-"
+		}
+		if (number > 999) display_buff[5] = BIT(3); // "1" 1000..1999
+		if (number > 99) display_buff[5] |= display_numbers[number / 100 % 10];
+		if (number > 9) display_buff[4] |= display_numbers[number / 10 % 10];
+	    display_buff[3] |= display_numbers[number %10];
+	}
+}
+#endif // USE_M5STACK_EMU
+
 __attribute__((optimize("-Os"))) void show_small_number(s16 number, bool percent){
 	display_buff[1] &= BIT(0); //  "(smile)"
 	display_buff[0] = percent? BIT(0) : 0;
